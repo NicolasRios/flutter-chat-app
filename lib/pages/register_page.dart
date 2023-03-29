@@ -1,7 +1,10 @@
 // ignore_for_file: sized_box_for_whitespace
 
+import 'package:chat_app/helpers/mostrar_alerta.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'package:chat_app/services/auth_service.dart';
 import '../widgets/widgets.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -53,6 +56,8 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -79,7 +84,21 @@ class __FormState extends State<_Form> {
           ),
           BotonAzul(
             text: 'Registrar',
-            onPressed: () {},
+            onPressed: authService.autenticando
+                ? null
+                : () async {
+                    final registroOk = await authService.register(
+                      nameCtrl.text.trim(),
+                      emailCtrl.text.trim(),
+                      passCtrl.text.trim(),
+                    );
+
+                    if (registroOk == true) {
+                      Navigator.pushReplacementNamed(context, 'usuarios');
+                    } else {
+                      mostrarAlerta(context, 'Resgistro Incorreto', registroOk);
+                    }
+                  },
           )
         ],
       ),
